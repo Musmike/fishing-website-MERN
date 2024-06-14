@@ -25,8 +25,10 @@ app.use("/api/users", userRoutes)
 
 connection()
 
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8089
 
-app.listen(port, () => console.log(`Nasłuchiwanie na porcie ${port}`))
+app.listen(port, 
+    () => console.log(`Nasłuchiwanie na porcie ${port}`
+));
 
 
