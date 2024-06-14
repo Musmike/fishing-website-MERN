@@ -3,7 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const connection = require('./db')
 const userRoutes = require("./routes/users")
-const authRoutes = require("./routes/auth")
+const authRoutes = require("./routes/authRoutes")
 const tokenVerification = require('./middleware/tokenVerification')
 
 const app = express()
