@@ -1,10 +1,9 @@
-const { User, validate } = require("../models/user");
+const { User, validateRegisterData, validateLoginData } = require("../models/userModel");
 const bcrypt = require("bcrypt");
-const Joi = require("joi");
 
 const register = async (req, res) => {
     try {
-        const { error } = validate(req.body);
+        const { error } = validateRegisterData(req.body);
 
         if (error) {
             return res.status(400).send({ message: error.details[0].message });
@@ -25,14 +24,13 @@ const register = async (req, res) => {
         res.status(201).send({ message: "Pomyślnie utworzono użytkownika" })
     }
     catch (error) {
-        
         res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
     }
 };
 
 const login = async (req, res) => {
     try {
-        const { error } = validate(req.body);
+        const { error } = validateLoginData(req.body);
 
         if (error) {
             return res.status(400).send({ message: error.details[0].message });
@@ -58,18 +56,10 @@ const login = async (req, res) => {
         console.log("asfd");
     }
     catch (error) {
-        res.status(500).send({ message: "Internal Server Error" });
+        res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
     }
 };
 
-const validate = (data) => {
-    const schema = Joi.object({
-        email: Joi.string().email().required().label("Email"),
-        password: Joi.string().required().label("Password"),
-    });
-    
-    return schema.validate(data);
-};
 
 module.exports = { register, login };
 

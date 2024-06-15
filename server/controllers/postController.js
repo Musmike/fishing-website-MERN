@@ -17,4 +17,21 @@ const getPosts = async (req, res) => {
     }
 };
 
-module.exports = { getPosts };
+const getPostById = async (req, res) => {
+    const postId = req.params.id;
+
+    try {
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).send({ message: 'Wpis nie został znaleziony' });
+        }
+
+        res.json(post);
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { getPosts, getPostById };
