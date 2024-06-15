@@ -5,12 +5,19 @@ import { Link } from 'react-router-dom'; // Import React Router Link
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(0);
     const [hasMore, setHasMore] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
 
     useEffect(() => {
-        fetchPosts(page);
-    }, [page]);
+        if (initialLoad) {
+            setPage(1); 
+            setInitialLoad(false);
+        } 
+        else {
+            fetchPosts(page);
+        }
+    }, [page, initialLoad]);
 
     const fetchPosts = async (page) => {
         try {

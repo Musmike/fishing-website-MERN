@@ -2,7 +2,7 @@ const Post = require('../models/postModel');
 
 const getPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const perPage = 5;
+    const perPage = 4;
 
     try {
         const posts = await Post.find()

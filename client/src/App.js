@@ -11,6 +11,8 @@ import Contact from './components/Contact';
 import Profile from './components/Profile'; 
 import Footer from './components/Footer';
 import './App.css';
+import 'lightbox2/dist/css/lightbox.min.css';
+import 'lightbox2/dist/js/lightbox-plus-jquery.min.js';
 
 function App() {
     const location = useLocation();

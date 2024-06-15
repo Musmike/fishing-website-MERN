@@ -19,7 +19,7 @@ const NavbarComponent = () => {
                         <Nav.Link as={Link} to="/home" style={{ fontSize: '1.1rem' }} className={`px-lg-3 py-3 py-lg-4`}>Strona główna</Nav.Link>
                         <Nav.Link as={Link} to="/reviews" style={{ fontSize: '1.1rem' }} className={`px-lg-3 py-3 py-lg-4`}>Opinie</Nav.Link>
                         <Nav.Link as={Link} to="/about" style={{ fontSize: '1.1rem' }} className={`px-lg-3 py-3 py-lg-4`}>O nas</Nav.Link>
-                        <Nav.Link as={Link} to="/kontakt" style={{ fontSize: '1.1rem' }} className={`px-lg-3 py-3 py-lg-4`}>Kontakt</Nav.Link>
+                        <Nav.Link as={Link} to="/contact" style={{ fontSize: '1.1rem' }} className={`px-lg-3 py-3 py-lg-4`}>Kontakt</Nav.Link>
                     </Nav>
                     <Nav className={`ms-auto mb-2 mb-lg-0 ${styles.navLinks}`}>
                         {true ? (
