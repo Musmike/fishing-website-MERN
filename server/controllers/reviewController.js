@@ -2,7 +2,7 @@ const Review = require('../models/reviewModel');
 
 const getAllReviews = async (req, res) => {
     try {
-        const reviews = await Review.find().populate('author', 'firstName lastName'); 
+        const reviews = await Review.find().populate('author', 'firstName lastName status'); 
         res.json(reviews);
     }
     catch (error) {

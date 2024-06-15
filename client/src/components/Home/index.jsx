@@ -37,8 +37,8 @@ const Home = () => {
     };
 
     const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-        return new Intl.DateTimeFormat('pl-PL', options).format(new Date(dateString));
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleDateString('pl-PL', options);
     };
 
     return (

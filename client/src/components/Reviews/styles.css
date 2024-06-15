@@ -1,0 +1,42 @@
+/* styles.css */
+
+.opinion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.opinion-header .user {
+    font-weight: bold;
+}
+
+.opinion-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.masthead {
+    background-image: url('https://www.sheknows.com/wp-content/uploads/2022/09/right-time-to-express-opinions.jpg?w=1440');
+    /* Dodaj tutaj inne style nagłówka */
+}
+
+.site-heading h1 {
+    /* Stylowanie tytułu */
+}
+
+.footer-button {
+    /* Stylowanie przycisku dodawania opinii */
+}
+
+.opinion-box {
+    /* Stylowanie kontenera opinii */
+}
+
+.opinion-body p {
+    /* Stylowanie treści opinii */
+}
+
+.opinion-actions button {
+    /* Stylowanie przycisków edycji i usuwania */
+}
