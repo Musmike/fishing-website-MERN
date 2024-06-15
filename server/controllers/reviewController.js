@@ -2,7 +2,7 @@ const Review = require('../models/reviewModel');
 
 const getAllReviews = async (req, res) => {
     try {
-        const reviews = await Review.find();
+        const reviews = await Review.find().populate('author', 'firstName lastName'); 
         res.json(reviews);
     }
     catch (error) {
@@ -14,7 +14,7 @@ const getReviewById = async (req, res) => {
     const reviewId = req.params.id;
 
     try {
-        const review = await Review.findById(reviewId);
+        const review = await Review.findById(reviewId).populate('author', 'firstName lastName'); 
 
         if (!review) {
             return res.status(404).send({ message: "Nie znaleziono opinii." });

@@ -1,141 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import styles from "./styles.module.css";
-import Users from './Users';
 
 const Home = () => {
+    const [posts, setPosts] = useState([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
-    const [dane, ustawDane] = useState([])
-    const [message, setMessage] = useState('');
+    useEffect(() => {
+        fetchPosts(page);
+    }, [page]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("token")
-        window.location.reload()
-    }
-
-    const handleGetUsers = async (e) => {
-        e.preventDefault()
-
-        const token = localStorage.getItem("token")
-
-        if (token) {
-            try {
-                const config = {
-                    method: 'get',
-                    url: 'http://localhost:8080/api/users',
-                    headers: { 'Content-Type': 'application/json', 'x-access-token': token }
-                }
-
-                const { data: res } = await axios(config)
-                setMessage(res.message);
-                ustawDane(res.data)
+    const fetchPosts = async (page) => {
+        try {
+            const response = await axios.get(`http://localhost:8089/api/posts?page=${page}`);
+            if (response.data.length === 0) {
+                setHasMore(false);
+            } else {
+                setPosts(prevPosts => [...prevPosts, ...response.data]);
             }
-            catch (error) {
-                if (error.response && error.response.status >= 400
-                    && error.response.status <= 500) {
-                    localStorage.removeItem("token")
-                    window.location.reload()
-                }
-            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
         }
-    }
+    };
 
-    const handleGetUserDetails = async (e) => {
-        e.preventDefault();
-
-        const token = localStorage.getItem("token");
-
-        if (token) {
-            try {
-                const config = {
-                    method: 'get',
-                    url: 'http://localhost:8080/api/users/details',
-                    headers: { 'Content-Type': 'application/json', 'x-access-token': token }
-                }
-
-                const { data: res } = await axios(config);
-                setMessage(res.message);
-                ustawDane([res.data]); 
-            }
-            catch (error) {
-                if (error.response && error.response.status >= 400
-                    && error.response.status <= 500) {
-                    localStorage.removeItem("token");
-                    window.location.reload();
-                }
-            }
-        }
-    }
-
-    const handleDeleteAccount = async (e) => {
-        e.preventDefault();
-
-        const token = localStorage.getItem("token");
-
-        if (token) {
-            const confirmDelete = window.confirm("Czy na pewno chcesz usunąć swoje konto?");
-            if (confirmDelete) {
-                try {
-                    const config = {
-                        method: 'delete',
-                        url: 'http://localhost:8080/api/users',
-                        headers: { 'Content-Type': 'application/json', 'x-access-token': token }
-                    }
-
-                    const { data: res } = await axios(config);
-                    setMessage(res.message);
-                    localStorage.removeItem("token");
-                    window.location.reload();
-                }
-                catch (error) {
-                    if (error.response && error.response.status >= 400
-                        && error.response.status <= 500) {
-                        localStorage.removeItem("token");
-                        window.location.reload();
-                    }
-                }
-            }
-        }
-    }
+    const loadMorePosts = () => {
+        setPage(prevPage => prevPage + 1);
+    };
 
     return (
-        <div className={styles.main_container}>
-            <h1>Moja stronka</h1>
+        <Container className="px-4 px-lg-5">
+            <Row className="gx-4 gx-lg-5 justify-content-center" id="posty">
+                {posts.map(post => (
+                    <Col key={post._id} md={10} lg={8} xl={7}>
+                        <div className="post-preview">
+                            <div className="d-flex justify-content-center">
+                                <img className="img-fluid" src={post.image_link} alt="Opis zdjęcia" />
+                            </div>
+                            <a href={`/posts/${post._id}`}>
+                                <h2 className="post-title">{post.title}</h2>
+                                <h3 className="post-subtitle">{post.short_description}</h3>
+                            </a>
+                            <p className="post-meta">
+                                Opublikowano przez <b>{post.author}</b> dnia {new Date(post.created_at).toLocaleDateString()}
+                            </p>
+                        </div>
+                        <hr className="my-4" />
+                    </Col>
+                ))}
+            </Row>
 
-            <nav className={styles.navbar}>     
-
-                <button className={styles.white_btn} onClick={handleGetUsers}>
-                    Użytkownicy
-                </button>
-
-                <button className={styles.white_btn} onClick={handleGetUserDetails}>
-                    Szczegóły konta
-                </button>
-
-                <button className={styles.white_btn} onClick={handleDeleteAccount}>
-                    Usuń konto
-                </button>
-
-                <button className={styles.white_btn} onClick={handleLogout}>
-                    Wyloguj się
-                </button>
-
-            </nav>
-
-            <h2>{message}</h2>
-            
-            {dane.length === 1 ? (
-                <div>
-                    <h3>{dane[0].firstName} {dane[0].lastName}</h3>
-                    <p>id: {dane[0]._id}</p>
-                    <p>email: {dane[0].email}</p>
-                </div>
-            ) : (
-                dane.length > 0 ? <Users users={dane} /> : <p></p>
+            {hasMore && (
+                <Row className="justify-content-end mb-4">
+                    <Col md={6} className="text-end">
+                        <Button variant="primary" onClick={loadMorePosts} className="text-uppercase" id="loadMore">Więcej →</Button>
+                    </Col>
+                </Row>
             )}
+        </Container>
+    );
+};
 
-        </div>
-    )
-
-}
-export default Home
+export default Home;

@@ -2,32 +2,29 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
-const CustomNavbar = () => {
-    // Przykładowe zmienne lub funkcje potrzebne w aplikacji
+const NavbarComponent = () => {
 
     const handleLogout = () => {
-        // Implementacja wylogowania użytkownika
-    };
+        // logika wylogowania użytkownika
+    }
 
     return (
         <Navbar bg="dark" expand="lg" variant="dark">
+
             <div className="container px-5">
-                <Navbar.Brand href="/">Wędkarstwo naszą pasją</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/">Wędkarstwo naszą pasją</Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarSupportedContent" />
                 <Navbar.Collapse id="navbarSupportedContent">
+
                     <Nav className="me-auto mb-2 mb-lg-0">
-                        <Nav.Link as={Link} to="/" className="px-lg-3 py-3 py-lg-4">Strona główna</Nav.Link>
-                        <Nav.Link as={Link} to="/nasz_sklep" className="px-lg-3 py-3 py-lg-4">Nasz sklep</Nav.Link>
-                        <Nav.Link as={Link} to="/fishes" className="px-lg-3 py-3 py-lg-4">Wasze połowy</Nav.Link>
-                        <Nav.Link as={Link} to="/orders" className="px-lg-3 py-3 py-lg-4">Zamówienie</Nav.Link>
-                        <Nav.Link as={Link} to="/comments" className="px-lg-3 py-3 py-lg-4">Opinie</Nav.Link>
+                        <Nav.Link as={Link} to="/home" className="px-lg-3 py-3 py-lg-4">Strona główna</Nav.Link>
+                        <Nav.Link as={Link} to="/reviews" className="px-lg-3 py-3 py-lg-4">Opinie</Nav.Link>
+                        <Nav.Link as={Link} to="/about" className="px-lg-3 py-3 py-lg-4">O nas</Nav.Link>
                         <Nav.Link as={Link} to="/kontakt" className="px-lg-3 py-3 py-lg-4">Kontakt</Nav.Link>
                     </Nav>
 
-                    {/* Warunkowe wyświetlanie opcji logowania i rejestracji */}
                     <Nav className="ms-auto mb-2 mb-lg-0">
-                        {/* Przykładowe warunki logiki */}
-                        {true ? ( // Tu można użyć warunku, czy użytkownik jest zalogowany
+                        {true ? ( 
                             <NavDropdown title="Username" id="navbarDropdown">
                                 <NavDropdown.Item as={Link} to="/profile">Edytuj profil</NavDropdown.Item>
                                 <NavDropdown.Divider />
@@ -40,10 +37,12 @@ const CustomNavbar = () => {
                             </>
                         )}
                     </Nav>
+
                 </Navbar.Collapse>
             </div>
+
         </Navbar>
     );
 };
 
-export default CustomNavbar;
+export default NavbarComponent;
