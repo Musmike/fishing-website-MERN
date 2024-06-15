@@ -11,7 +11,6 @@ import Contact from './components/Contact';
 import Profile from './components/Profile'; 
 import Footer from './components/Footer';
 import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
     const location = useLocation();
@@ -23,6 +22,8 @@ function App() {
 
     const getPageTitle = (path) => {
         switch (path) {
+            case '/post':
+                return 'Post';
             case '/reviews':
                 return 'Opinie';
             case '/about':
@@ -47,7 +48,7 @@ function App() {
                 <Routes>
                     <Route path="/" exact element={<Home />} />
                     <Route path="/home" exact element={<Home />} />
-                    <Route path="/post" exact element={<Post />} />
+                    <Route path="/post/:postId" element={<Post />} /> 
                     <Route path="/reviews" exact element={<Reviews />} />
                     <Route path="/about" exact element={<About />} />
                     <Route path="/contact" exact element={<Contact />} />

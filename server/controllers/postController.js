@@ -6,16 +6,18 @@ const getPosts = async (req, res) => {
 
     try {
         const posts = await Post.find()
+            .sort({ created_at: -1 })
             .skip((page - 1) * perPage)
-            .limit(perPage)
-            .sort({ createdAt: -1 });
-
+            .limit(perPage);
+;
         res.json(posts);
     }
     catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
+
 
 const getPostById = async (req, res) => {
     const postId = req.params.id;

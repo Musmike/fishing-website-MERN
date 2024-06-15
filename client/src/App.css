@@ -13,29 +13,41 @@ html, body {
 
 .content-container {
     flex: 1;
-    padding: 20px; /* Dodaj padding, aby zapewnić odstęp między treścią a footerem */
 }
 
 footer {
-    background-color: #343a40; /* Możesz dostosować kolor tła */
-    color: white; /* Możesz dostosować kolor tekstu */
+    background-color: #343a40;
+    color: white; 
     padding: 10px 0;
     text-align: center;
 }
 
+.masthead {
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    background-position: center;
+    background-size: cover;
+    height: 60vh; 
+}
 
- #masthead {
-  transition: background-image 0.5s ease-in-out;
- }
 
- .navbar-nav li.nav-item a.nav-link {
+
+
+
+
+
+
+#masthead {
+    transition: background-image 0.5s ease-in-out;
+}
+.navbar-nav li.nav-item a.nav-link {
   font-size: 80%;
 }
 
 .post-subtitle {
   font-size: 90%;
 }
-
 
 :root {
   --bs-blue: #0d6efd;
