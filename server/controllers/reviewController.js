@@ -17,11 +17,11 @@ const getReviewById = async (req, res) => {
         const review = await Review.findById(reviewId);
 
         if (!review) {
-            return res.status(404).send({ message: "Nie znaleziono opinii." })
+            return res.status(404).send({ message: "Nie znaleziono opinii." });
         }
 
         res.json(review);
-    }
+    } 
     catch (error) {
         res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
     }
@@ -42,23 +42,28 @@ const createReview = async (req, res) => {
         res.status(201).send({ message: "Pomyślnie utworzono opinię." });
     }
     catch (error) {
+        console.error(error);
         res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
     }
 };
 
 
 const updateReview = async (req, res) => {
-    const { id } = req.params;
-    const { message } = req.body;
+    const { content } = req.body;
+    const reviewId = req.params.id;
 
     try {
-        const review = await Review.findByIdAndUpdate(id, { message }, { new: true });
+        const review = await Review.findById(reviewId);
 
         if (!review) {
             return res.status(404).send({ message: 'Opinia nie została znaleziona!' });
         }
 
-        res.json(review);
+        review.content = content;
+        review.updated_at = Date.now();
+
+        const updatedReview = await review.save();
+        res.json(updatedReview);
     }
     catch (error) {
         res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
@@ -66,10 +71,10 @@ const updateReview = async (req, res) => {
 };
 
 const deleteReview = async (req, res) => {
-    const { id } = req.params;
+    const reviewId = req.params.id;
 
     try {
-        const review = await Review.findByIdAndDelete(id);
+        const review = await Review.findByIdAndDelete(reviewId);
 
         if (!review) {
             return res.status(404).send({ message: 'Opinia nie została znaleziona!' });

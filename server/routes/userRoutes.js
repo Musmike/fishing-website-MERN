@@ -9,9 +9,12 @@ router.get("/post/:id", postController.getPostById);
 
 router.get("/reviews", reviewController.getAllReviews);
 
-router.post("/review", authenticateToken, reviewController.createReview);
-// router.get("/review/:id", authenticateToken, checkReviewOwnership, reviewController.getReviewById);
-// router.put("/updateReview/:id", authenticateToken, checkReviewOwnership, reviewController.updateReview);
-// router.delete("/deleteReview/:id", authenticateToken, checkReviewOwnership, reviewController.deleteReview);
+
+router.use(authenticateToken);
+
+router.post("/review", reviewController.createReview);
+router.get("/review/:id", checkReviewOwnership, reviewController.getReviewById);
+router.patch("/review/:id", checkReviewOwnership, reviewController.updateReview);
+router.delete("/review/:id", checkReviewOwnership, reviewController.deleteReview);
 
 module.exports = router;

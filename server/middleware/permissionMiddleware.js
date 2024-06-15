@@ -1,7 +1,6 @@
 const Review = require('../models/reviewModel');
-const User = require('../models/userModel');
 
-const checkReviewOwnerShip = async (req, res, next) => {
+const checkReviewOwnership = async (req, res, next) => {
     const { id } = req.params;
 
     try {
@@ -11,11 +10,11 @@ const checkReviewOwnerShip = async (req, res, next) => {
             return res.status(404).send({ message: 'Opinia nie została znaleziona!' });
         }
 
-        if (review.author.equals(req.user.id) || req.user.role == 'admin') {
+        if (review.author.equals(req.user._id) || req.user.role == 'admin') {
             return next();
         }
         else {
-            return res.sendStatus(403).send({ message: 'Brak uprawnień!' });
+            return res.status(403).send({ message: 'Brak uprawnień!' });
         }
     }
     catch (error) {
@@ -23,4 +22,4 @@ const checkReviewOwnerShip = async (req, res, next) => {
     }
 }
 
-module.exports = checkReviewOwnerShip;
+module.exports = { checkReviewOwnership };
