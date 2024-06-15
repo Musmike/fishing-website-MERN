@@ -1,7 +1,6 @@
 const { User, validate } = require("../models/user")
 const bcrypt = require("bcrypt")
 
-
 const deleteUser = async (req, res) => {
     try {
         const user = await User.findByIdAndDelete(req.user._id);

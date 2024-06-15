@@ -12,9 +12,8 @@ app.use(cors({
     origin: '*'
 }));
 
-
 app.use("/auth", authRoutes);
-app.use("/", userRoutes);
+app.use("/api", userRoutes);
 
 connection()
 

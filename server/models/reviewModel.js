@@ -6,9 +6,11 @@ const reviewSchema = new mongoose.Schema({
         ref: 'User',
         required: true 
     },
-    message: { type: String, required: true },
+    content: { type: String, required: true },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
 
 const Review = mongoose.model('Review', reviewSchema);
+
+module.exports = Review;

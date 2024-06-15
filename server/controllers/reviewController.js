@@ -1,14 +1,13 @@
 const Review = require('../models/reviewModel');
 
 const getAllReviews = async (req, res) => {
-    Review.find().exec()
-        .then(async () => {
-            const reviews = await Review.find();
-            res.status(200).send({ data: reviews });
-        })
-        .catch(error => {
-            res.status(500).send({ message: error.message });
-        });
+    try {
+        const reviews = await Review.find();
+        res.json(reviews);
+    }
+    catch (error) {
+        res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
+    }
 };
 
 const getReviewById = async (req, res) => {
@@ -29,13 +28,13 @@ const getReviewById = async (req, res) => {
 };
 
 const createReview = async (req, res) => {
-    const { message } = req.body;
+    const { content } = req.body;
     const author = req.user._id;
 
     try {
         const newReview = new Review({
             author,
-            message,
+            content,
         });
 
         const savedReview = await newReview.save();

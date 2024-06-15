@@ -1,34 +1,29 @@
 [
     {
-        "_id": 4,
         "author": 3,
         "message": "Sklep wędkarski z prawdziwego zdarzenia. Tutaj znajdziesz wszystko, czego potrzebujesz do udanej wędkarskiej wyprawy.",
         "created_at": "2024-01-20 14:15:54",
         "updated_at": "2024-01-20 14:15:54"
     },
     {
-        "_id": 7,
         "author": 4,    
         "message": "Super sklep wędkarski, najlepszy w mieście. Polecam.",
         "created_at": "2024-01-20 17:00:18",
         "updated_at": "2024-01-23 11:41:46"
     },
     {
-        "_id": 8,
         "author": 2,
         "message": "Obsługa klienta jest przyjazna i pomocna. Pracownicy chętnie udzielają porad i dzielą się swoją wiedzą na temat najlepszych miejsc do wędkowania czy nowości w świecie wędkarstwa.",
         "created_at": "2024-01-21 12:16:34",
         "updated_at": "2024-01-21 12:16:34"
     },
     {
-        "_id": 11,
         "author": 1,
         "message": "Super sklep wędkarski. Można tu znaleźć wszystko, co się potrzebuje",
         "created_at": "2024-01-24 06:05:08",
         "updated_at": "2024-01-24 06:15:50"
     },
     {
-        "_id": 12,
         "author": 1,
         "message": "Super sklep. Przychodzę tam regularnie.",
         "created_at": "2024-01-24 06:16:03",

@@ -13,8 +13,7 @@ const register = async (req, res) => {
 
         if (user) {
             return res.status(409)
-                .status(409)
-                .send({ message: "User with given email already Exist!" });
+                .send({ message: "Użytkownik o podanym adresie email istnieje!" });
         }
 
         const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -39,7 +38,7 @@ const login = async (req, res) => {
         const user = await User.findOne({ email: req.body.email });
 
         if (!user) {
-            return res.status(401).send({ message: "Invalid Email or Password" });
+            return res.status(401).send({ message: "Nieprawidłowy adres email!" });
         }
 
         const validPassword = await bcrypt.compare(
@@ -48,18 +47,16 @@ const login = async (req, res) => {
         );
 
         if (!validPassword) {
-            return res.status(401).send({ mesaage: "Invalid Email or Password" });
+            return res.status(401).send({ mesaage: "Nieprawiłowe hasło!" });
         }
 
         const token = user.generateAuthToken();
-        res.status(200).send({ data: token, message: "logged in successfully" });
-        console.log("asfd");
+        res.status(200).send({ data: token, message: "Zalogowano pomyślnie." });
     }
     catch (error) {
         res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
     }
 };
-
 
 module.exports = { register, login };
 
