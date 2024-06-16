@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import CustomModal from './CustomModal'; // Importuj własny modal
 import './styles.css';
 
 const Reviews = ({ user }) => {
@@ -8,17 +9,17 @@ const Reviews = ({ user }) => {
     const [newReview, setNewReview] = useState("");
     const [editingReview, setEditingReview] = useState(null);
     const [reviewToDelete, setReviewToDelete] = useState(null);
-    const [confirmDelete, setConfirmDelete] = useState(null);
 
     useEffect(() => {
         fetchReviews();
     }, []);
-
+    
     const fetchReviews = async () => {
         try {
             const response = await axios.get('http://localhost:8089/api/reviews');
             setReviews(response.data);
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Błąd przy pobieraniu opinii:', error);
         }
     };
@@ -29,7 +30,12 @@ const Reviews = ({ user }) => {
 
     const handleSaveEdit = async () => {
         try {
-            await axios.put(`http://localhost:8089/api/review/${editingReview._id}`, { content: editingReview.content });
+            const config = {
+                headers: {
+                    'x-access-token': token 
+                }
+            };
+            await axios.patch(`http://localhost:8089/api/review/${editingReview._id}`, { content: editingReview.content }, config);
             setEditingReview(null);
             fetchReviews();
         } 
@@ -39,14 +45,19 @@ const Reviews = ({ user }) => {
     };
 
     const handleDelete = async () => {
-        if (confirmDelete) {
+        if (reviewToDelete) {
             try {
-                await axios.delete(`http://localhost:8089/api/review/${}`);
-                setConfirmDelete(null);
+                const config = {
+                    headers: {
+                        'x-access-token': token 
+                    }
+                };
+                await axios.delete(`http://localhost:8089/api/review/${reviewToDelete}`, config);
+                setReviewToDelete(null);
                 fetchReviews();
             } 
             catch (error) {
-                console.error('Błąd przy próbie usunięcia opinii:', error);
+                console.error('Błąd przy usuwaniu opinii:', error);
             }
         }
     };
@@ -130,7 +141,7 @@ const Reviews = ({ user }) => {
                             {user && (review.author._id === user._id || user.status === 'admin') && (
                                 <div className="opinion-actions">
                                     <button className="btn btn-success btn-sm" onClick={() => handleEdit(review)}>Edytuj</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(review._id)}>Usuń</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => setReviewToDelete(review._id)}>Usuń</button>
                                 </div>
                             )}
                             <hr className="my-4" />
@@ -139,16 +150,16 @@ const Reviews = ({ user }) => {
                 </div>
             </div>
 
-            {confirmDelete && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <p>Czy na pewno chcesz usunąć tę opinię?</p>
-                        <button onClick={handleDelete} className="btn btn-danger">Usuń</button>
-                        <button onClick={() => setConfirmDelete(null)} className="btn btn-secondary">Anuluj</button>
-                    </div>
+            <CustomModal
+                isOpen={!!reviewToDelete}
+                onClose={() => setReviewToDelete(null)}
+            >
+                <div className="modal-content">
+                    <p>Czy na pewno chcesz usunąć tę opinię?</p>
+                    <button onClick={handleDelete} className="btn btn-danger narrow-button">Usuń</button>
+                    <button onClick={() => setReviewToDelete(null)} className="btn btn-secondary narrow-button">Anuluj</button>
                 </div>
-            )}
-
+            </CustomModal>
         </div>
     );
 };
