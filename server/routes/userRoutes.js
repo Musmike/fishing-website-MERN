@@ -17,4 +17,7 @@ router.get("/review/:id", checkReviewOwnership, reviewController.getReviewById);
 router.patch("/review/:id", checkReviewOwnership, reviewController.updateReview);
 router.delete("/review/:id", checkReviewOwnership, reviewController.deleteReview);
 
+router.patch("/user", reviewController.updateReview);
+router.delete("/user", reviewController.deleteReview);
+
 module.exports = router;

@@ -1,0 +1,42 @@
+.mainContainer {
+    margin: 70px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 60px auto;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+}
+
+.container h2 {
+    margin-bottom: 30px;
+}
+
+.formSection {
+    margin-bottom: 20px;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.alert {
+    margin-bottom: 15px;
+}
+
+.button {
+    margin-top: 10px;
+}
+
+.deleteButton {
+    margin-top: 20px;
+}
+
+.hr {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
