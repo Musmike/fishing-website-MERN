@@ -24,7 +24,7 @@ const NavbarComponent = ({ user }) => {
                     </Nav>
                     <Nav className={`ms-auto mb-2 mb-lg-0 ${styles.navLinks}`}>
                         {user ? (
-                            <NavDropdown title={user.name} id="navbarDropdown" style={{ fontSize: '1.1rem' }}>
+                            <NavDropdown title={user.name} id="navbarDropdown">
                                 <NavDropdown.Item as={Link} to="/profile">Edytuj profil</NavDropdown.Item>
                                 <NavDropdown.Divider />
                                 <NavDropdown.Item onClick={handleLogout}>Wyloguj się</NavDropdown.Item>

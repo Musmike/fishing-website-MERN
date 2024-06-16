@@ -50,7 +50,6 @@ const updateUser = async (req, res) => {
         }
 
         const { profileDataError } = validateProfileChangeData(updateFields);
-
         if (profileDataError) {
             return res.status(400).send({ message: profileDataError.details[0].message });
         }

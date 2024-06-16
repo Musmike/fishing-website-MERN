@@ -87,6 +87,7 @@ const validateProfileChangeData = (data) => {
             'string.email': 'Podaj adres email w poprawnej formie!'
         }),
     });
+    console.log("xD");
 
     return schema.validate(data);
 };
@@ -99,11 +100,12 @@ const validatePasswordChangeData = (data) => {
         newPassword: passwordComplexity().required().label("Nowe hasło").messages({
             'any.required': 'Pole Nowe hasło jest wymagane!',
         }),
-        confirmNewPassword: Joi.any().valid(Joi.ref("newPassword")).required().label("Potwierdzenie nowego hasła").messages({
+        confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required().label("Potwierdzenie nowego hasła").messages({
             "any.only": "Pole Potwierdź nowe hasło musi być zgodne z nowym hasłem!",
             'any.required': 'Pole Potwierdź nowe hasło jest wymagane!',
         }),
     });
+
 
     return schema.validate(data);
 };
