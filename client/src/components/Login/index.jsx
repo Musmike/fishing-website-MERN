@@ -4,10 +4,7 @@ import { Link } from "react-router-dom";
 import styles from "./styles.module.css";
 
 const Login = () => {
-    const [data, setData] = useState({
-        username: "",
-        password: ""
-    });
+    const [data, setData] = useState({ email: "", password: "" })
 
     const [error, setError] = useState("");
 
@@ -21,13 +18,14 @@ const Login = () => {
         try {
             const url = "http://localhost:8089/auth/login";
             const { data: res } = await axios.post(url, data);
-            localStorage.setItem("token", res.token);
+            localStorage.setItem("token", res.data);
             window.location = "/";
         } 
         catch (error) {
             if (error.response && error.response.status >= 400 && error.response.status <= 500) {
-                setError(error.response.data); 
-            } else {
+                setError(error.response.data.message); 
+            } 
+            else {
                 setError("Wystąpił nieoczekiwany błąd.");
             }
         }
@@ -41,18 +39,17 @@ const Login = () => {
 
                     <form className={styles.form_container} onSubmit={handleSubmit}>
 
-                        <h1>Zaloguj się na swoje konto</h1>
+                        <h2>Zaloguj się na swoje konto</h2>
 
                         <input
-                            type="text"
-                            placeholder="Nazwa użytkownika"
-                            name="username"
+                            type="email"
+                            placeholder="Adres email"
+                            name="email"
                             onChange={handleChange}
-                            value={data.username}
+                            value={data.email}
                             required
                             className={styles.input}
                         />
-
                         <input
                             type="password"
                             placeholder="Hasło"
@@ -75,7 +72,7 @@ const Login = () => {
 
                 <div className={styles.right}>
 
-                    <h1>Nie masz konta?</h1>
+                    <h2>Nie masz konta?</h2>
 
                     <Link to="/register">
                         <button type="button" className={styles.register_btn}>

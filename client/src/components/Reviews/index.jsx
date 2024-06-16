@@ -1,35 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './styles.css'; 
+import './styles.css';
 
 const Reviews = ({ user }) => {
-    const [comments, setComments] = useState([]);
+    const token = localStorage.getItem('token'); 
+    const [reviews, setReviews] = useState([]);
+    const [newReview, setNewReview] = useState("");
+    const [editingReview, setEditingReview] = useState(null);
+    const [reviewToDelete, setReviewToDelete] = useState(null);
+    const [confirmDelete, setConfirmDelete] = useState(null);
 
     useEffect(() => {
-        fetchComments();
+        fetchReviews();
     }, []);
 
-    const fetchComments = async () => {
+    const fetchReviews = async () => {
         try {
-            const response = await axios.get('http://localhost:8089/api/reviews'); // Zastąp odpowiednim adresem URL API
-            setComments(response.data);
+            const response = await axios.get('http://localhost:8089/api/reviews');
+            setReviews(response.data);
         } catch (error) {
-            console.error('Error fetching comments:', error);
+            console.error('Błąd przy pobieraniu opinii:', error);
         }
     };
 
-    const handleEdit = (commentId) => {
-        // Przekierowanie do formularza edycji, np. history.push(`/edit/${commentId}`);
-        console.log(`Edit comment with id ${commentId}`);
+    const handleEdit = (review) => {
+        setEditingReview(review);
     };
 
-    const handleDelete = async (commentId) => {
-        if (window.confirm('Czy na pewno chcesz usunąć ten komentarz?')) {
+    const handleSaveEdit = async () => {
+        try {
+            await axios.put(`http://localhost:8089/api/review/${editingReview._id}`, { content: editingReview.content });
+            setEditingReview(null);
+            fetchReviews();
+        } 
+        catch (error) {
+            console.error('Błąd przy edytowaniu opinii:', error);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (confirmDelete) {
             try {
-                await axios.delete(`https://api.example.com/comments/${commentId}`); // Zastąp odpowiednim adresem URL API
-                fetchComments(); // Odśwież listę po usunięciu
-            } catch (error) {
-                console.error('Error deleting comment:', error);
+                await axios.delete(`http://localhost:8089/api/review/${}`);
+                setConfirmDelete(null);
+                fetchReviews();
+            } 
+            catch (error) {
+                console.error('Błąd przy próbie usunięcia opinii:', error);
+            }
+        }
+    };
+
+    const handleAddReview = async () => {
+        if (newReview.trim()) {
+            try {
+                const config = {
+                    headers: {
+                        'x-access-token': token 
+                    }
+                };
+                await axios.post('http://localhost:8089/api/review', { content: newReview }, config);
+                setNewReview("");
+                fetchReviews();
+            } 
+            catch (error) {
+                console.error('Błąd przy dodawaniu opinii:', error);
             }
         }
     };
@@ -41,7 +76,6 @@ const Reviews = ({ user }) => {
 
     return (
         <div>
-            {/* Nagłówek strony */}
             <header className="masthead" style={{ backgroundImage: "url('https://www.sheknows.com/wp-content/uploads/2022/09/right-time-to-express-opinions.jpg?w=1440')" }}>
                 <div className="container position-relative px-4 px-lg-5">
                     <div className="row gx-4 gx-lg-5 justify-content-center">
@@ -55,32 +89,48 @@ const Reviews = ({ user }) => {
             </header>
 
             <div className="container my-4">
-                {/* Przycisk dodawania opinii (dla zalogowanych użytkowników) */}
+
                 {user && (
                     <div className="footer-button">
-                        <a href="/create" className="btn btn-secondary">Dodaj opinię</a>
+                        <textarea
+                            className="form-control"
+                            placeholder="Dodaj opinię"
+                            value={newReview}
+                            onChange={(e) => setNewReview(e.target.value)}
+                        />
+                        <button onClick={handleAddReview} className="btn btn-secondary mt-2">Dodaj opinię</button>
                         <hr className="my-4" />
                     </div>
                 )}
 
-                {/* Lista opinii */}
                 <div className="opinions-list">
-                    {comments.map((comment) => (
-                        <div key={comment._id} className="opinion-box py-3">
-                            {/* Nagłówek opinii */}
+                    {reviews.map((review) => (
+                        <div key={review._id} className="opinion-box py-3">
+
                             <div className="opinion-header">
-                                <span className="user">{comment.author.firstName} {comment.author.lastName}</span>
-                                <span className="date opinion-box__date">{formatDate(comment.created_at)}</span>
+                                <span className="user">{review.author.firstName} {review.author.lastName}</span>
+                                <span className="date opinion-box__date">{formatDate(review.updated_at)}</span>
                             </div>
-                            {/* Treść opinii */}
+
                             <div className="opinion-body">
-                                <p>{comment.content}</p>
+                                {editingReview && editingReview._id === review._id ? (
+                                    <>
+                                        <textarea
+                                            className="form-control"
+                                            value={editingReview.content}
+                                            onChange={(e) => setEditingReview({ ...editingReview, content: e.target.value })}
+                                        />
+                                        <button onClick={handleSaveEdit} className="btn btn-success btn-sm mt-2">Zapisz</button>
+                                    </>
+                                ) : (
+                                    <p>{review.content}</p>
+                                )}
                             </div>
-                            {/* Akcje opinii (edycja/usuwanie) */}
-                            {user && (comment.author._id === user._id || user.status === 'admin') && (
+
+                            {user && (review.author._id === user._id || user.status === 'admin') && (
                                 <div className="opinion-actions">
-                                    <button className="btn btn-success btn-sm" onClick={() => handleEdit(comment._id)}>Edytuj</button>
-                                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(comment._id)}>Usuń</button>
+                                    <button className="btn btn-success btn-sm" onClick={() => handleEdit(review)}>Edytuj</button>
+                                    <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(review._id)}>Usuń</button>
                                 </div>
                             )}
                             <hr className="my-4" />
@@ -88,6 +138,17 @@ const Reviews = ({ user }) => {
                     ))}
                 </div>
             </div>
+
+            {confirmDelete && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <p>Czy na pewno chcesz usunąć tę opinię?</p>
+                        <button onClick={handleDelete} className="btn btn-danger">Usuń</button>
+                        <button onClick={() => setConfirmDelete(null)} className="btn btn-secondary">Anuluj</button>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

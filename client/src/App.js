@@ -10,9 +10,17 @@ import About from './components/About';
 import Contact from './components/Contact'; 
 import Profile from './components/Profile'; 
 import Footer from './components/Footer';
+import { jwtDecode } from 'jwt-decode';
 import './App.css';
 
 function App() {
+    const token = localStorage.getItem("token");
+    let user = null;
+
+    if (token) {
+        user = jwtDecode(token);
+    }
+
     const location = useLocation();
 
     useEffect(() => {
@@ -43,16 +51,16 @@ function App() {
 
     return (
         <div className="app-container">
-            <Navbar />
+            <Navbar user={user}/>
             <div className="content-container">
                 <Routes>
                     <Route path="/" exact element={<Home />} />
                     <Route path="/home" exact element={<Home />} />
                     <Route path="/post/:postId" element={<Post />} /> 
-                    <Route path="/reviews" exact element={<Reviews />} />
+                    <Route path="/reviews" exact element={<Reviews user={user}/>} />
                     <Route path="/about" exact element={<About />} />
                     <Route path="/contact" exact element={<Contact />} />
-                    <Route path="/profile" exact element={<Profile />} />
+                    <Route path="/profile" exact element={<Profile user={user}/>} />
                     <Route path="/register" exact element={<Register />} />
                     <Route path="/login" exact element={<Login />} />
                 </Routes>

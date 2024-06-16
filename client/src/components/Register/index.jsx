@@ -1,7 +1,7 @@
-import { useState } from "react"
-import axios from "axios"
-import { Link, useNavigate } from "react-router-dom"
-import styles from "./styles.module.css"
+import { useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from 'react-router-dom';
+import styles from "./styles.module.css";
 
 const Register = () => {
     const [data, setData] = useState({
@@ -11,49 +11,64 @@ const Register = () => {
         password: "",
     })
 
-    const [error, setError] = useState("")
-    const navigate = useNavigate()
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const handleChange = ({ currentTarget: input }) => {
         setData({ ...data, [input.name]: input.value })
-    }
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const url = "http://localhost:8080/auth/register"
-            const { data: res } = await axios.post(url, data)
-            navigate("/login")
-            console.log(res.message)
+        e.preventDefault();
+    
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            setError("Niepoprawny format adresu e-mail.");
+            return;
         }
+    
+        try {
+            const url = "http://localhost:8089/auth/register";
+            const { data: res } = await axios.post(url, data);
+            navigate("/login");
+            console.log(res);
+        } 
         catch (error) {
-            if (error.response &&
-                error.response.status >= 400 &&
-                error.response.status <= 500) {
-                setError(error.response.data.message)
+            if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                setError(error.response.data.message); 
+            } 
+            else {
+                setError("Wystąpił nieoczekiwany błąd.");
             }
         }
-    }
+    };
+    
 
     return (
         <div className={styles.signup_container}>
+
             <div className={styles.signup_form_container}>
+
                 <div className={styles.left}>
-                    <h1>Welcome Back</h1>
+
+                    <h2>Masz już konto?</h2>
+
                     <Link to="/login">
-                        <button type="button"
-                            className={styles.white_btn}>
-                            Sing in
+                        <button type="button" className={styles.login_btn}>
+                            Zaloguj się
                         </button>
                     </Link>
+
                 </div>
+
                 <div className={styles.right}>
-                    <form className={styles.form_container}
-                        onSubmit={handleSubmit}>
-                        <h1>Create Account</h1>
+                    <form className={styles.form_container} onSubmit={handleSubmit}>
+
+                        <h2>Stwórz konto</h2>
+
                         <input
                             type="text"
-                            placeholder="First Name"
+                            placeholder="Imię"
                             name="firstName"
                             onChange={handleChange}
                             value={data.firstName}
@@ -62,7 +77,7 @@ const Register = () => {
                         />
                         <input
                             type="text"
-                            placeholder="Last Name"
+                            placeholder="Nazwisko"
                             name="lastName"
                             onChange={handleChange}
                             value={data.lastName}
@@ -71,7 +86,7 @@ const Register = () => {
                         />
                         <input
                             type="email"
-                            placeholder="Email"
+                            placeholder="Adres email"
                             name="email"
                             onChange={handleChange}
                             value={data.email}
@@ -80,24 +95,30 @@ const Register = () => {
                         />
                         <input
                             type="password"
-                            placeholder="Password"
+                            placeholder="Hasło"
                             name="password"
                             onChange={handleChange}
                             value={data.password}
                             required
                             className={styles.input}
                         />
+
                         {error && <div
                             className={styles.error_msg}>{error}</div>}
+
                         <button type="submit"
-                            className={styles.green_btn}>
-                            Sing Up
+                            className={styles.register_btn}>
+                            Zarejestruj się
                         </button>
+
                     </form>
                 </div>
-            </div>
-        </div>)
 
-}
+            </div>
+
+        </div>
+    );
+
+};
 
 export default Register;
