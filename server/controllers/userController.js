@@ -1,4 +1,4 @@
-const { User, validate } = require("../models/user")
+const { User, validateProfileChangeData, validatePasswordChangeData } = require("../models/userModel")
 const bcrypt = require("bcrypt")
 
 const deleteUser = async (req, res) => {
@@ -20,12 +20,8 @@ const updateUser = async (req, res) => {
     try {
         let updateFields = {};
 
-        if (req.body.firstName) updateFields.firstName = req.body.firstName;
-        if (req.body.lastName) updateFields.lastName = req.body.lastName;
-        if (req.body.email) updateFields.email = req.body.email;
-
         if (req.body.currentPassword && req.body.newPassword && req.body.confirmNewPassword) {
-            const { error: passwordError } = validatePasswordChangeData(req.body);
+            const { passwordError } = validatePasswordChangeData(req.body);
 
             if (passwordError) {
                 return res.status(400).send({ message: passwordError.details[0].message });
@@ -47,8 +43,18 @@ const updateUser = async (req, res) => {
 
             updateFields.password = hashPassword;
         }
+        else {
+            if (req.body.firstName) updateFields.firstName = req.body.firstName;
+            if (req.body.lastName) updateFields.lastName = req.body.lastName;
+            if (req.body.email) updateFields.email = req.body.email;
+        }
 
-    
+        const { profileDataError } = validateProfileChangeData(updateFields);
+
+        if (profileDataError) {
+            return res.status(400).send({ message: profileDataError.details[0].message });
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id,
             updateFields,
@@ -66,15 +72,5 @@ const updateUser = async (req, res) => {
     }
 };
 
-const validatePasswordChangeData = (data) => {
-    const schema = Joi.object({
-        currentPassword: Joi.string().required().label("Aktualne hasło"),
-        newPassword: passwordComplexity().required().label("Nowe hasło"),
-        confirmNewPassword: Joi.any().valid(Joi.ref("newPassword")).required().label("Potwierdzenie nowego hasła").messages({
-            "any.only": "{{#label}} musi być zgodne z nowym hasłem",
-        }),
-    });
-    return schema.validate(data);
-};
 
 module.exports = { deleteUser, updateUser };

@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Alert, Container } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import styles from './styles.module.css';
+import axios from 'axios';
 
-const EditProfile = () => {
+const EditProfile = ({ user }) => {
+
+    const token = localStorage.getItem('token'); 
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -20,7 +24,18 @@ const EditProfile = () => {
 
     const handleProfileUpdate = async () => {
         try {
-            // Logic to update user profile
+            const config = {
+                headers: {
+                    'x-access-token': token 
+                }
+            };
+
+            await axios.patch("http://localhost:8089/api/user", {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email
+            }, config);
+
             setSuccessMessage('Profil użytkownika zaktualizowany pomyślnie.');
         } 
         catch (error) {
@@ -30,7 +45,19 @@ const EditProfile = () => {
 
     const handlePasswordChange = async () => {
         try {
-            // Logic to change user password
+
+            const config = {
+                headers: {
+                    'x-access-token': token 
+                }
+            };
+
+            await axios.patch("http://localhost:8089/api/user", {
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword,
+                confirmNewPassword: passwordData.confirmNewPassword
+            }, config);
+
             setSuccessMessage('Hasło użytkownika zmienione pomyślnie.');
         } 
         catch (error) {
@@ -41,48 +68,21 @@ const EditProfile = () => {
     const handleDeleteAccount = async () => {
         if (window.confirm('Czy na pewno chcesz usunąć konto?')) {
             try {
-
+                const config = {
+                    headers: {
+                        'x-access-token': token 
+                    }
+                };
+                await axios.delete("http://localhost:8089/api/user", config);
+                localStorage.removeItem("token");
+                window.location.reload();
+                setSuccessMessage('Konto użytkownika usunięte pomyślnie.');
             } 
             catch (error) {
                 setErrorMessage('Błąd podczas usuwania konta.');
             }
         }
     };
-
-    const handleSaveEdit = async () => {
-        try {
-            const config = {
-                headers: {
-                    'x-access-token': token 
-                }
-            };
-            await axios.patch(`http://localhost:8089/api/review/${editingReview._id}`, { content: editingReview.content }, config);
-            setEditingReview(null);
-            fetchReviews();
-        } 
-        catch (error) {
-            console.error('Błąd przy edytowaniu opinii:', error);
-        }
-    };
-
-    const handleDelete = async () => {
-        if (reviewToDelete) {
-            try {
-                const config = {
-                    headers: {
-                        'x-access-token': token 
-                    }
-                };
-                await axios.delete(`http://localhost:8089/api/review/${reviewToDelete}`, config);
-                setReviewToDelete(null);
-                fetchReviews();
-            } 
-            catch (error) {
-                console.error('Błąd przy usuwaniu opinii:', error);
-            }
-        }
-    };
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;

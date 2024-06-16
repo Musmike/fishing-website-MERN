@@ -35,22 +35,78 @@ const User = mongoose.model("User", userSchema);
 
 const validateRegisterData = (data) => {
     const schema = Joi.object({
-        firstName: Joi.string().required().label("First Name"),
-        lastName: Joi.string().required().label("Last Name"),
-        email: Joi.string().email().required().label("Email"),
-        password: passwordComplexity().required().label("Password"),
-    })
-    return schema.validate(data)
-}
+        firstName: Joi.string().min(2).max(30).required().messages({
+            'any.required': 'Pole Imię jest wymagane!',
+            'string.min': 'Imię powinno mieć co najmniej {#limit} znaki!',
+            'string.max': 'Imię powinno mieć maksymalnie {#limit} znaków!'
+        }),
+        lastName: Joi.string().min(2).max(30).required().messages({
+            'any.required': 'Pole Nazwisko jest wymagane!',
+            'string.min': 'Nazwisko powinno mieć co najmniej {#limit} znaki!',
+            'string.max': 'Nazwisko powinno mieć maksymalnie {#limit} znaków!'
+        }),
+        email: Joi.string().email().required().messages({
+            'any.required': 'Pole Email jest wymagane!',
+            'string.email': 'Podaj adres email w poprawnej formie!'
+        }),
+        password: passwordComplexity().required().messages({
+            'any.required': 'Pole Hasło jest wymagane!',
+            'any.required': 'Pole Hasło jest wymagane!'
+        }),
+    });
+
+    return schema.validate(data);
+};
 
 const validateLoginData = (data) => {
     const schema = Joi.object({
-        email: Joi.string().email().required().label("Email"),
-        password: Joi.string().required().label("Password"),
-    })
-    
-    return schema.validate(data)
-}
+        email: Joi.string().email().required().messages({
+            'any.required': 'Pole Email jest wymagane!',
+            'string.email': 'Podaj adres email w poprawnej formie!'
+        }),
+        password: Joi.string().required().messages({
+            'any.required': 'Pole Hasło jest wymagane!'
+        }),
+    });
 
-module.exports = { User, validateRegisterData, validateLoginData };
+    return schema.validate(data);
+};
+
+
+const validateProfileChangeData = (data) => {
+    const schema = Joi.object({
+        firstName: Joi.string().min(2).max(30).allow('').label("Imię").messages({
+            'string.min': 'Pole Imię powinno mieć co najmniej {#limit} znaki!',
+            'string.max': 'Polę Imię powinno mieć maksymalnie {#limit} znaków!'
+        }),
+        lastName: Joi.string().min(2).max(30).allow('').label("Nazwisko").messages({
+            'string.min': 'Pole powinno mieć co najmniej {#limit} znaki!',
+            'string.max': 'Nazwisko powinno mieć maksymalnie {#limit} znaków!'
+        }),
+        email: Joi.string().email().allow('').label("Email").messages({
+            'string.email': 'Podaj adres email w poprawnej formie!'
+        }),
+    });
+
+    return schema.validate(data);
+};
+
+const validatePasswordChangeData = (data) => {
+    const schema = Joi.object({
+        currentPassword: Joi.string().required().label("Aktualne hasło").messages({
+            'any.required': 'Pole Aktualne hasło jest wymagane!',
+        }),
+        newPassword: passwordComplexity().required().label("Nowe hasło").messages({
+            'any.required': 'Pole Nowe hasło jest wymagane!',
+        }),
+        confirmNewPassword: Joi.any().valid(Joi.ref("newPassword")).required().label("Potwierdzenie nowego hasła").messages({
+            "any.only": "Pole Potwierdź nowe hasło musi być zgodne z nowym hasłem!",
+            'any.required': 'Pole Potwierdź nowe hasło jest wymagane!',
+        }),
+    });
+
+    return schema.validate(data);
+};
+
+module.exports = { User, validateRegisterData, validateLoginData, validateProfileChangeData, validatePasswordChangeData };
 
