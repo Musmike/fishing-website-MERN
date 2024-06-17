@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom'; // Import React Router Link
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     const [posts, setPosts] = useState([]);

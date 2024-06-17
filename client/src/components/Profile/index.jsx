@@ -6,7 +6,7 @@ import CustomModal from './CustomModal';
 import Joi from 'joi';
 import passwordComplexity from 'joi-password-complexity';
 
-const EditProfile = ({ user }) => {
+const EditProfile = () => {
 
     const token = localStorage.getItem('token'); 
 

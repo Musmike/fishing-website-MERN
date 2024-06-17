@@ -61,7 +61,7 @@ function App() {
                     <Route path="/reviews" exact element={<Reviews user={user}/>} />
                     <Route path="/about" exact element={<About />} />
                     <Route path="/contact" exact element={<Contact />} />
-                    {user && <Route path="/profile" exact element={<Profile user={user}/>} />}
+                    {user && <Route path="/profile" exact element={<Profile />} />}
                     <Route path="/register" exact element={<Register />} />
                     <Route path="/login" exact element={<Login />} />
                     <Route path="/profile" element={<Navigate replace to="/" />} />
