@@ -20,10 +20,35 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.email)) {
-            setError("Niepoprawny format adresu e-mail.");
+
+        const schema = Joi.object({
+            firstName: Joi.string().min(2).max(30).required().messages({
+                'any.required': 'Pole Imię jest wymagane!',
+                'string.empty': 'Pole Imię nie może być puste!',
+                'string.min': 'Imię powinno mieć co najmniej {#limit} znaki!',
+                'string.max': 'Imię powinno mieć maksymalnie {#limit} znaków!'
+            }),
+            lastName: Joi.string().min(2).max(30).required().messages({
+                'any.required': 'Pole Nazwisko jest wymagane!',
+                'string.empty': 'Pole Nazwisko nie może być puste!',
+                'string.min': 'Nazwisko powinno mieć co najmniej {#limit} znaki!',
+                'string.max': 'Nazwisko powinno mieć maksymalnie {#limit} znaków!'
+            }),
+            email: Joi.string().email().required().messages({
+                'any.required': 'Pole Email jest wymagane!',
+                'string.empty': 'Pole Email nie może być puste!',
+                'string.email': 'Podaj adres email w poprawnej formie!'
+            }),
+            password: passwordComplexity().required().messages({
+                'any.required': 'Pole Hasło jest wymagane!',
+                'string.empty': 'Pole Hasło nie może być puste!'
+            }),
+        });
+        
+        const { error } = schema.validate(data);
+
+        if (error) {
+            setError(error.details[0].message);
             return;
         }
     
@@ -72,6 +97,8 @@ const Register = () => {
                             name="firstName"
                             onChange={handleChange}
                             value={data.firstName}
+                            minLength={2}
+                            maxLength={20}
                             required
                             className={styles.input}
                         />
@@ -81,6 +108,8 @@ const Register = () => {
                             name="lastName"
                             onChange={handleChange}
                             value={data.lastName}
+                            minLength={2}
+                            maxLength={20}
                             required
                             className={styles.input}
                         />

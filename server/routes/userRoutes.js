@@ -14,7 +14,6 @@ router.get("/reviews", reviewController.getAllReviews);
 router.use(authenticateToken);
 
 router.post("/review", reviewController.createReview);
-//router.get("/review/:id", checkReviewOwnership, reviewController.getReviewById);
 router.patch("/review/:id", checkReviewOwnership, reviewController.updateReview);
 router.delete("/review/:id", checkReviewOwnership, reviewController.deleteReview);
 

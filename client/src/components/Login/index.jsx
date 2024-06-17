@@ -14,6 +14,25 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const schema = Joi.object({
+            email: Joi.string().email().required().messages({
+                'any.required': 'Pole Email jest wymagane!',
+                'string.empty': 'Pole Email nie może być puste!',
+                'string.email': 'Podaj adres email w poprawnej formie!'
+            }),
+            password: Joi.string().required().messages({
+                'any.required': 'Pole Hasło jest wymagane!',
+                'string.empty': 'Pole Hasło nie może być puste!'
+            }),
+        });
+    
+        const { error } = schema.validate(data);
+
+        if (error) {
+            setError(error.details[0].message);
+            return;
+        }
     
         try {
             const url = "http://localhost:8089/auth/login";

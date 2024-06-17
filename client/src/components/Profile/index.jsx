@@ -25,6 +25,29 @@ const EditProfile = ({ user }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleProfileUpdate = async () => {
+
+        const schema = Joi.object({
+            firstName: Joi.string().min(2).max(30).allow('').label("Imię").messages({
+                'string.min': 'Pole Imię powinno mieć co najmniej {#limit} znaki!',
+                'string.max': 'Pole Imię powinno mieć maksymalnie {#limit} znaków!'
+            }),
+            lastName: Joi.string().min(2).max(30).allow('').label("Nazwisko").messages({
+                'string.min': 'Pole Nazwisko powinno mieć co najmniej {#limit} znaki!',
+                'string.max': 'Pole Nazwisko powinno mieć maksymalnie {#limit} znaków!'
+            }),
+            email: Joi.string().email().allow('').label("Email").messages({
+                'string.email': 'Podaj adres email w poprawnej formie!'
+            }),
+        });
+
+        const { error } = schema.validate(formData);
+
+        if (error) {
+            setErrorMessage(error.details[0].message);
+            setSuccessMessage('');
+            return;
+        }
+
         try {
             const config = {
                 headers: {
@@ -54,6 +77,36 @@ const EditProfile = ({ user }) => {
     };
 
     const handlePasswordChange = async () => {
+
+        const schema = Joi.object({
+            currentPassword: Joi.string().required().label("Aktualne hasło").messages({
+                'any.required': "Pole 'Aktualne hasło' jest wymagane!",
+                'string.empty': "Pole 'Aktualne hasło' nie może być puste!"
+            }),
+            newPassword: passwordComplexity().required().label("Nowe hasło").custom((value, helpers) => {
+                if (value === helpers.state.ancestors[0].currentPassword) {
+                    return helpers.message("Nowe hasło nie może być identyczne z aktualnym hasłem!");
+                }
+                return value;
+            }).messages({
+                'any.required': "Pole 'Nowe hasło' jest wymagane!",
+                'string.empty': "Pole 'Nowe hasło' nie może być puste!"
+            }),
+            confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required().label("Potwierdzenie nowego hasła").messages({
+                "any.only": "Pola z nowym hasłem muszą być identyczne!",
+                'any.required': "Pole 'Potwierdź nowe hasło' jest wymagane!",
+                'string.empty': "Pole 'Potwierdź nowe hasło' nie może być puste!"
+            }),
+        });
+    
+        const { error } = schema.validate(formData);
+
+        if (error) {
+            setErrorMessage(error.details[0].message);
+            setSuccessMessage('');
+            return;
+        }
+
         try {
 
             const config = {
@@ -135,6 +188,8 @@ const EditProfile = ({ user }) => {
                             placeholder="Wprowadź imię"
                             name="firstName"
                             value={formData.firstName}
+                            minLength={2}
+                            maxLength={20}
                             onChange={handleChange}
                         />
                     </div>
@@ -147,6 +202,8 @@ const EditProfile = ({ user }) => {
                             placeholder="Wprowadź nazwisko"
                             name="lastName"
                             value={formData.lastName}
+                            minLength={2}
+                            maxLength={20}
                             onChange={handleChange}
                         />
                     </div>
@@ -179,6 +236,7 @@ const EditProfile = ({ user }) => {
                             placeholder="Wprowadź aktualne hasło"
                             name="currentPassword"
                             value={passwordData.currentPassword}
+                            required
                             onChange={handlePasswordChangeInput}
                         />
                     </div>
@@ -191,6 +249,7 @@ const EditProfile = ({ user }) => {
                             placeholder="Wprowadź nowe hasło"
                             name="newPassword"
                             value={passwordData.newPassword}
+                            required
                             onChange={handlePasswordChangeInput}
                         />
                     </div>
@@ -203,6 +262,7 @@ const EditProfile = ({ user }) => {
                             placeholder="Potwierdź nowe hasło"
                             name="confirmNewPassword"
                             value={passwordData.confirmNewPassword}
+                            required
                             onChange={handlePasswordChangeInput}
                         />
                     </div>

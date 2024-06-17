@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Joi = require('joi');
 
 const reviewSchema = new mongoose.Schema({
     author: {    
@@ -13,4 +14,17 @@ const reviewSchema = new mongoose.Schema({
 
 const Review = mongoose.model('Review', reviewSchema);
 
-module.exports = Review;
+const validateReviewData = (data) => {
+    
+    const schema = Joi.object({
+        content: Joi.string().required().max(500).messages({
+            'any.required': 'Treść recenzji jest wymagana.',
+            'string.empty': 'Treść recenzji nie może być pusta.',
+            'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków.'
+        })
+    });
+
+    return schema.validate(data);
+};
+
+module.exports = { Review, validateReviewData };

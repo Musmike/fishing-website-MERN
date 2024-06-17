@@ -26,7 +26,6 @@ const updateUser = async (req, res) => {
 
         if (isUpdatingPassword) {
 
-
             const { error: passwordError } = validatePasswordChangeData(req.body);
             if (passwordError) {
                 return res.status(400).send({ message: passwordError.details[0].message });

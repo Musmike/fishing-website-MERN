@@ -37,21 +37,24 @@ const validateRegisterData = (data) => {
     const schema = Joi.object({
         firstName: Joi.string().min(2).max(30).required().messages({
             'any.required': 'Pole Imię jest wymagane!',
+            'string.empty': 'Pole Imię nie może być puste!',
             'string.min': 'Imię powinno mieć co najmniej {#limit} znaki!',
             'string.max': 'Imię powinno mieć maksymalnie {#limit} znaków!'
         }),
         lastName: Joi.string().min(2).max(30).required().messages({
             'any.required': 'Pole Nazwisko jest wymagane!',
+            'string.empty': 'Pole Nazwisko nie może być puste!',
             'string.min': 'Nazwisko powinno mieć co najmniej {#limit} znaki!',
             'string.max': 'Nazwisko powinno mieć maksymalnie {#limit} znaków!'
         }),
         email: Joi.string().email().required().messages({
             'any.required': 'Pole Email jest wymagane!',
+            'string.empty': 'Pole Email nie może być puste!',
             'string.email': 'Podaj adres email w poprawnej formie!'
         }),
         password: passwordComplexity().required().messages({
             'any.required': 'Pole Hasło jest wymagane!',
-            'any.required': 'Pole Hasło jest wymagane!'
+            'string.empty': 'Pole Hasło nie może być puste!'
         }),
     });
 
@@ -62,16 +65,17 @@ const validateLoginData = (data) => {
     const schema = Joi.object({
         email: Joi.string().email().required().messages({
             'any.required': 'Pole Email jest wymagane!',
+            'string.empty': 'Pole Email nie może być puste!',
             'string.email': 'Podaj adres email w poprawnej formie!'
         }),
         password: Joi.string().required().messages({
-            'any.required': 'Pole Hasło jest wymagane!'
+            'any.required': 'Pole Hasło jest wymagane!',
+            'string.empty': 'Pole Hasło nie może być puste!'
         }),
     });
 
     return schema.validate(data);
 };
-
 
 const validateProfileChangeData = (data) => {
     const schema = Joi.object({
@@ -96,6 +100,7 @@ const validatePasswordChangeData = (data) => {
     const schema = Joi.object({
         currentPassword: Joi.string().required().label("Aktualne hasło").messages({
             'any.required': "Pole 'Aktualne hasło' jest wymagane!",
+            'string.empty': "Pole 'Aktualne hasło' nie może być puste!"
         }),
         newPassword: passwordComplexity().required().label("Nowe hasło").custom((value, helpers) => {
             if (value === helpers.state.ancestors[0].currentPassword) {
@@ -104,10 +109,12 @@ const validatePasswordChangeData = (data) => {
             return value;
         }).messages({
             'any.required': "Pole 'Nowe hasło' jest wymagane!",
+            'string.empty': "Pole 'Nowe hasło' nie może być puste!"
         }),
         confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required().label("Potwierdzenie nowego hasła").messages({
             "any.only": "Pola z nowym hasłem muszą być identyczne!",
             'any.required': "Pole 'Potwierdź nowe hasło' jest wymagane!",
+            'string.empty': "Pole 'Potwierdź nowe hasło' nie może być puste!"
         }),
     });
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CustomModal from './CustomModal'; 
+import Joi from 'joi';
 import './styles.css';
 
 const Reviews = ({ user }) => {
@@ -9,6 +10,7 @@ const Reviews = ({ user }) => {
     const [newReview, setNewReview] = useState("");
     const [editingReview, setEditingReview] = useState(null);
     const [reviewToDelete, setReviewToDelete] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         fetchReviews();
@@ -29,6 +31,22 @@ const Reviews = ({ user }) => {
     };
 
     const handleSaveEdit = async () => {
+
+        const schema = Joi.object({
+            content: Joi.string().required().max(500).messages({
+                'any.required': 'Treść recenzji jest wymagana.',
+                'string.empty': 'Treść recenzji nie może być pusta.',
+                'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków.'
+            })
+        });
+
+        const { error } = schema.validate({ content: editingReview.content });
+
+        if (error) {
+            setErrorMessage(error.details[0].message);
+            return;
+        }
+        
         try {
             const config = {
                 headers: {
@@ -63,6 +81,23 @@ const Reviews = ({ user }) => {
     };
 
     const handleAddReview = async () => {
+
+        const schema = Joi.object({
+            content: Joi.string().required().max(500).messages({
+                'any.required': 'Treść recenzji jest wymagana.',
+                'string.empty': 'Treść recenzji nie może być pusta.',
+                'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków.'
+            })
+        });
+
+        const { error } = schema.validate(newReview);
+
+        if (error) {
+            setErrorMessage(error.details[0].message);
+            setSuccessMessage('');
+            return;
+        }
+
         if (newReview.trim()) {
             try {
                 const config = {
