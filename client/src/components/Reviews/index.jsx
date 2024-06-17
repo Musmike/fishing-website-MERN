@@ -12,7 +12,8 @@ const Reviews = ({ user }) => {
     const [editingReview, setEditingReview] = useState(null);
     const [reviewToDelete, setReviewToDelete] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [editErrorMessage, setEditErrorMessage] = useState('');
+    const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
 
     useEffect(() => {
         fetchReviews();
@@ -21,16 +22,17 @@ const Reviews = ({ user }) => {
     const fetchReviews = async () => {
         try {
             const response = await axios.get('http://localhost:8089/api/reviews');
+            console.log(response.data);
             setReviews(response.data);
         } 
         catch (error) {
             setErrorMessage('Wystąpił błąd przy pobieraniu opinii.');
-            setSuccessMessage('');
         }
     };
 
     const handleEdit = (review) => {
         setEditingReview(review);
+        setEditErrorMessage('');
     };
 
     const handleSaveEdit = async () => {
@@ -45,8 +47,7 @@ const Reviews = ({ user }) => {
         const { error } = schema.validate({ content: editingReview.content });
 
         if (error) {
-            setErrorMessage(error.details[0].message);
-            setSuccessMessage('');
+            setEditErrorMessage(error.details[0].message);
             return;
         }
 
@@ -58,18 +59,15 @@ const Reviews = ({ user }) => {
             };
             await axios.patch(`http://localhost:8089/api/review/${editingReview._id}`, { content: editingReview.content }, config);
             setEditingReview(null);
-            setErrorMessage('');
-            setSuccessMessage('');
+            setEditErrorMessage('');
             fetchReviews();
         } 
         catch (error) {
             if (error.response && error.response.status >= 400 && error.response.status <= 500) {
-                setErrorMessage(error.response.data.message); 
-                setSuccessMessage('');
+                setEditErrorMessage(error.response.data.message); 
             } 
             else {
-                setErrorMessage("Wystąpił nieoczekiwany błąd.");
-                setSuccessMessage('');
+                setEditErrorMessage("Wystąpił nieoczekiwany błąd.");
             }
         }
     };
@@ -84,18 +82,15 @@ const Reviews = ({ user }) => {
                 };
                 await axios.delete(`http://localhost:8089/api/review/${reviewToDelete}`, config);
                 setReviewToDelete(null);
-                setErrorMessage('');
-                setSuccessMessage('');
+                setDeleteErrorMessage('');
                 fetchReviews();
             } 
             catch (error) {
                 if (error.response && error.response.status >= 400 && error.response.status <= 500) {
                     setErrorMessage(error.response.data.message); 
-                    setSuccessMessage('');
                 } 
                 else {
-                    setErrorMessage("Wystąpił nieoczekiwany błąd.");
-                    setSuccessMessage('');
+                    setDeleteErrorMessage("Wystąpił nieoczekiwany błąd.");
                 }
             }
         }
@@ -114,7 +109,6 @@ const Reviews = ({ user }) => {
 
         if (error) {
             setErrorMessage(error.details[0].message);
-            setSuccessMessage('');
             return;
         }
 
@@ -128,17 +122,14 @@ const Reviews = ({ user }) => {
                 await axios.post('http://localhost:8089/api/review', { content: newReview }, config);
                 setNewReview("");
                 setErrorMessage('');
-                setSuccessMessage('');
                 fetchReviews();
             } 
             catch (error) {
                 if (error.response && error.response.status >= 400 && error.response.status <= 500) {
                     setErrorMessage(error.response.data.message); 
-                    setSuccessMessage('');
                 } 
                 else {
                     setErrorMessage("Wystąpił nieoczekiwany błąd.");
-                    setSuccessMessage('');
                 }
             }
         }
@@ -147,6 +138,14 @@ const Reviews = ({ user }) => {
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
         return new Date(dateString).toLocaleDateString('pl-PL', options);
+    };
+
+    const renderAuthorName = (author) => {
+        if (author) {
+            return `${author.firstName} ${author.lastName}`;
+        } else {
+            return '[Konto usunięte]';
+        }
     };
 
     return (
@@ -177,7 +176,6 @@ const Reviews = ({ user }) => {
 
                         <div className="alerts-container">
                             {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-                            {successMessage && <Alert variant="success">{successMessage}</Alert>}
                         </div>
 
                         <hr className="my-4" />
@@ -192,7 +190,7 @@ const Reviews = ({ user }) => {
                         <div key={review._id} className="opinion-box py-3">
 
                             <div className="opinion-header">
-                                <span className="user">{review.author.firstName} {review.author.lastName}</span>
+                            <span className="user">{renderAuthorName(review.author)}</span>
                                 <span className="date opinion-box__date">{formatDate(review.updated_at)}</span>
                             </div>
 
@@ -204,6 +202,12 @@ const Reviews = ({ user }) => {
                                             value={editingReview.content}
                                             onChange={(e) => setEditingReview({ ...editingReview, content: e.target.value })}
                                         />
+
+                                        <div className="alerts-container">
+                                            {editErrorMessage && <Alert variant="danger">{editErrorMessage}</Alert>}
+                                            {deleteErrorMessage && <Alert variant="danger">{deleteErrorMessage}</Alert>}
+                                        </div>
+
                                         <button onClick={handleSaveEdit} className="btn btn-success btn-sm mt-2">Zapisz</button>
                                     </>
                                 ) : (
@@ -211,7 +215,7 @@ const Reviews = ({ user }) => {
                                 )}
                             </div>
 
-                            {user && (review.author._id === user._id || user.status === 'admin') && (
+                            {(user && (user.status === 'admin' || (review.author && review.author._id === user._id))) && (
                                 <div className="opinion-actions">
                                     <button className="btn btn-success btn-sm" onClick={() => handleEdit(review)}>Edytuj</button>
                                     <button className="btn btn-danger btn-sm" onClick={() => setReviewToDelete(review._id)}>Usuń</button>

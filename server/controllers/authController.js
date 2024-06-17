@@ -47,7 +47,7 @@ const login = async (req, res) => {
         );
 
         if (!validPassword) {
-            return res.status(401).send({ mesaage: "Nieprawiłowe hasło!" });
+            return res.status(401).send({ message: "Nieprawiłowe hasło!" });
         }
 
         const token = user.generateAuthToken();
