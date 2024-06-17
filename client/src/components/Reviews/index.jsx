@@ -1,28 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CustomModal from './CustomModal'; 
+import CustomModal from './CustomModal';
 import Joi from 'joi';
+import { Alert } from 'react-bootstrap';
 import './styles.css';
 
 const Reviews = ({ user }) => {
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState("");
     const [editingReview, setEditingReview] = useState(null);
     const [reviewToDelete, setReviewToDelete] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
         fetchReviews();
     }, []);
-    
+
     const fetchReviews = async () => {
         try {
             const response = await axios.get('http://localhost:8089/api/reviews');
             setReviews(response.data);
         } 
         catch (error) {
-            console.error('Błąd przy pobieraniu opinii:', error);
+            setErrorMessage('Wystąpił błąd przy pobieraniu opinii.');
+            setSuccessMessage('');
         }
     };
 
@@ -31,12 +34,11 @@ const Reviews = ({ user }) => {
     };
 
     const handleSaveEdit = async () => {
-
         const schema = Joi.object({
             content: Joi.string().required().max(500).messages({
-                'any.required': 'Treść recenzji jest wymagana.',
-                'string.empty': 'Treść recenzji nie może być pusta.',
-                'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków.'
+                'any.required': 'Treść recenzji jest wymagana!',
+                'string.empty': 'Treść recenzji nie może być pusta!',
+                'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków!'
             })
         });
 
@@ -44,21 +46,31 @@ const Reviews = ({ user }) => {
 
         if (error) {
             setErrorMessage(error.details[0].message);
+            setSuccessMessage('');
             return;
         }
-        
+
         try {
             const config = {
                 headers: {
-                    'x-access-token': token 
+                    'x-access-token': token
                 }
             };
             await axios.patch(`http://localhost:8089/api/review/${editingReview._id}`, { content: editingReview.content }, config);
             setEditingReview(null);
+            setErrorMessage('');
+            setSuccessMessage('');
             fetchReviews();
         } 
         catch (error) {
-            console.error('Błąd przy edytowaniu opinii:', error);
+            if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                setErrorMessage(error.response.data.message); 
+                setSuccessMessage('');
+            } 
+            else {
+                setErrorMessage("Wystąpił nieoczekiwany błąd.");
+                setSuccessMessage('');
+            }
         }
     };
 
@@ -67,30 +79,38 @@ const Reviews = ({ user }) => {
             try {
                 const config = {
                     headers: {
-                        'x-access-token': token 
+                        'x-access-token': token
                     }
                 };
                 await axios.delete(`http://localhost:8089/api/review/${reviewToDelete}`, config);
                 setReviewToDelete(null);
+                setErrorMessage('');
+                setSuccessMessage('');
                 fetchReviews();
             } 
             catch (error) {
-                console.error('Błąd przy usuwaniu opinii:', error);
+                if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                    setErrorMessage(error.response.data.message); 
+                    setSuccessMessage('');
+                } 
+                else {
+                    setErrorMessage("Wystąpił nieoczekiwany błąd.");
+                    setSuccessMessage('');
+                }
             }
         }
     };
 
     const handleAddReview = async () => {
-
         const schema = Joi.object({
             content: Joi.string().required().max(500).messages({
-                'any.required': 'Treść recenzji jest wymagana.',
-                'string.empty': 'Treść recenzji nie może być pusta.',
-                'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków.'
+                'any.required': 'Treść recenzji jest wymagana!',
+                'string.empty': 'Treść recenzji nie może być pusta!',
+                'string.max': 'Treść recenzji może mieć maksymalnie {#limit} znaków!'
             })
         });
 
-        const { error } = schema.validate(newReview);
+        const { error } = schema.validate({ content: newReview });
 
         if (error) {
             setErrorMessage(error.details[0].message);
@@ -102,15 +122,24 @@ const Reviews = ({ user }) => {
             try {
                 const config = {
                     headers: {
-                        'x-access-token': token 
+                        'x-access-token': token
                     }
                 };
                 await axios.post('http://localhost:8089/api/review', { content: newReview }, config);
                 setNewReview("");
+                setErrorMessage('');
+                setSuccessMessage('');
                 fetchReviews();
             } 
             catch (error) {
-                console.error('Błąd przy dodawaniu opinii:', error);
+                if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                    setErrorMessage(error.response.data.message); 
+                    setSuccessMessage('');
+                } 
+                else {
+                    setErrorMessage("Wystąpił nieoczekiwany błąd.");
+                    setSuccessMessage('');
+                }
             }
         }
     };
@@ -145,9 +174,18 @@ const Reviews = ({ user }) => {
                             onChange={(e) => setNewReview(e.target.value)}
                         />
                         <button onClick={handleAddReview} className="btn btn-secondary mt-2">Dodaj opinię</button>
+
+                        <div className="alerts-container">
+                            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+                            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+                        </div>
+
                         <hr className="my-4" />
                     </div>
                 )}
+
+
+
 
                 <div className="opinions-list">
                     {reviews.map((review) => (

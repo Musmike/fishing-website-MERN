@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Joi from 'joi';
 import styles from "./styles.module.css";
 
 const Login = () => {
@@ -16,7 +17,7 @@ const Login = () => {
         e.preventDefault();
 
         const schema = Joi.object({
-            email: Joi.string().email().required().messages({
+            email: Joi.string().email({ tlds: false }).required().messages({
                 'any.required': 'Pole Email jest wymagane!',
                 'string.empty': 'Pole Email nie może być puste!',
                 'string.email': 'Podaj adres email w poprawnej formie!'

@@ -83,7 +83,7 @@ const deleteReview = async (req, res) => {
         res.json({ message: 'Usunięto opinię.' });
     }
     catch (error) {
-        res.status(500).send({ message: "Błąd wewnętrzny serwera!" });
+        res.status(500).send({ message: "(E) Błąd wewnętrzny serwera!" });
     }
 };
 

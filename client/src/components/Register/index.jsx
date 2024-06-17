@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
+import Joi from 'joi';
+import passwordComplexity from 'joi-password-complexity';
 import styles from "./styles.module.css";
 
 const Register = () => {
@@ -34,7 +36,7 @@ const Register = () => {
                 'string.min': 'Nazwisko powinno mieć co najmniej {#limit} znaki!',
                 'string.max': 'Nazwisko powinno mieć maksymalnie {#limit} znaków!'
             }),
-            email: Joi.string().email().required().messages({
+            email: Joi.string().email({ tlds: false }).required().messages({
                 'any.required': 'Pole Email jest wymagane!',
                 'string.empty': 'Pole Email nie może być puste!',
                 'string.email': 'Podaj adres email w poprawnej formie!'

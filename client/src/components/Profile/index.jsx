@@ -3,6 +3,8 @@ import { Alert } from 'react-bootstrap';
 import styles from './styles.module.css';
 import axios from 'axios';
 import CustomModal from './CustomModal'; 
+import Joi from 'joi';
+import passwordComplexity from 'joi-password-complexity';
 
 const EditProfile = ({ user }) => {
 
@@ -35,7 +37,7 @@ const EditProfile = ({ user }) => {
                 'string.min': 'Pole Nazwisko powinno mieć co najmniej {#limit} znaki!',
                 'string.max': 'Pole Nazwisko powinno mieć maksymalnie {#limit} znaków!'
             }),
-            email: Joi.string().email().allow('').label("Email").messages({
+            email: Joi.string().email({ tlds: false }).allow('').label("Email").messages({
                 'string.email': 'Podaj adres email w poprawnej formie!'
             }),
         });
@@ -99,7 +101,7 @@ const EditProfile = ({ user }) => {
             }),
         });
     
-        const { error } = schema.validate(formData);
+        const { error } = schema.validate(passwordData);
 
         if (error) {
             setErrorMessage(error.details[0].message);
