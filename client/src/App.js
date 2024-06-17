@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import Home from './components/Home';
 import Post from './components/Post';
 import Register from './components/Register';
@@ -54,15 +54,17 @@ function App() {
             <Navbar user={user}/>
             <div className="content-container">
                 <Routes>
+
                     <Route path="/" exact element={<Home />} />
                     <Route path="/home" exact element={<Home />} />
                     <Route path="/post/:postId" element={<Post />} /> 
                     <Route path="/reviews" exact element={<Reviews user={user}/>} />
                     <Route path="/about" exact element={<About />} />
                     <Route path="/contact" exact element={<Contact />} />
-                    <Route path="/profile" exact element={<Profile user={user}/>} />
+                    {user && <Route path="/profile" exact element={<Profile user={user}/>} />}
                     <Route path="/register" exact element={<Register />} />
                     <Route path="/login" exact element={<Login />} />
+                    <Route path="/profile" element={<Navigate replace to="/" />} />
                 </Routes>
             </div>
             <Footer />

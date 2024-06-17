@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CustomModal from './CustomModal'; // Importuj własny modal
+import CustomModal from './CustomModal'; 
 import './styles.css';
 
 const Reviews = ({ user }) => {

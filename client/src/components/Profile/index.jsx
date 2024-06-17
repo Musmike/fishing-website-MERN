@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import styles from './styles.module.css';
 import axios from 'axios';
+import CustomModal from './CustomModal'; 
 
 const EditProfile = ({ user }) => {
 
@@ -21,6 +22,7 @@ const EditProfile = ({ user }) => {
 
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     const handleProfileUpdate = async () => {
         try {
@@ -37,9 +39,17 @@ const EditProfile = ({ user }) => {
             }, config);
 
             setSuccessMessage('Profil użytkownika zaktualizowany pomyślnie.');
+            setErrorMessage('');
         } 
         catch (error) {
-            setErrorMessage('Błąd podczas aktualizacji profilu.');
+            setSuccessMessage('');
+            if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                setErrorMessage(error.response.data.message); 
+            } 
+            else {
+                setErrorMessage("Wystąpił nieoczekiwany błąd.");
+
+            }
         }
     };
 
@@ -59,27 +69,39 @@ const EditProfile = ({ user }) => {
             }, config);
 
             setSuccessMessage('Hasło użytkownika zmienione pomyślnie.');
+            setErrorMessage('');
         } 
         catch (error) {
-            setErrorMessage('Błąd podczas zmiany hasła.');
+            setSuccessMessage('');
+            if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                setErrorMessage(error.response.data.message); 
+            } 
+            else {
+                setErrorMessage("Wystąpił nieoczekiwany błąd.");
+
+            }
         }
     };
 
     const handleDeleteAccount = async () => {
-        if (window.confirm('Czy na pewno chcesz usunąć konto?')) {
-            try {
-                const config = {
-                    headers: {
-                        'x-access-token': token 
-                    }
-                };
-                await axios.delete("http://localhost:8089/api/user", config);
-                localStorage.removeItem("token");
-                window.location.reload();
-                setSuccessMessage('Konto użytkownika usunięte pomyślnie.');
+        try {
+            const config = {
+                headers: {
+                    'x-access-token': token 
+                }
+            };
+            await axios.delete("http://localhost:8089/api/user", config);
+            localStorage.removeItem("token");
+            window.location.reload();
+        } 
+        catch (error) {
+            setSuccessMessage('');
+            if (error.response && error.response.status >= 400 && error.response.status <= 500) {
+                setErrorMessage(error.response.data.message); 
             } 
-            catch (error) {
-                setErrorMessage('Błąd podczas usuwania konta.');
+            else {
+                setErrorMessage("Wystąpił nieoczekiwany błąd.");
+
             }
         }
     };
@@ -192,9 +214,21 @@ const EditProfile = ({ user }) => {
 
                 <hr className={styles.hr} />
 
-                <button className={`btn btn-danger ${styles.button} ${styles.deleteButton}`} onClick={handleDeleteAccount}>
+                <button className={`btn btn-danger ${styles.button} ${styles.deleteButton}`} onClick={() => setShowDeleteModal(true)}>
                     Usuń konto
                 </button>
+
+                <CustomModal
+                    isOpen={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    onConfirm={handleDeleteAccount}
+                >
+                    <div className="modal-content">
+                        <p>Czy na pewno chcesz usunąć swoje konto?</p>
+                        <p>To działanie jest nieodwracalne!</p>
+                    </div>
+                </CustomModal>
+
             </div>
         </div>
     );
