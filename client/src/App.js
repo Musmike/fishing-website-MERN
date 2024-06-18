@@ -18,7 +18,12 @@ function App() {
     let user = null;
 
     if (token) {
-        user = jwtDecode(token);
+        try {
+            user = jwtDecode(token);
+        } catch (e) {
+            console.error('Invalid token', e);
+            localStorage.removeItem("token");
+        }
     }
 
     const location = useLocation();
